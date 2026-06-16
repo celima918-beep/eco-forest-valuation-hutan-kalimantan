@@ -1,0 +1,166 @@
+import streamlit as st
+import pandas as pd
+
+st.set_page_config(
+    page_title="Eco-Forest Valuation Hutan Kalimantan Selatan", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+col_logo, col_judul = st.columns([1, 4])
+
+with col_logo:
+    st.image(
+        "https://www.unisba.ac.id/wp-content/uploads/2022/09/logo-unisba-300x300.png", 
+        width=120
+    )
+
+with col_judul:
+    st.title("ECO-FOREST VALUATION HUTAN KALIMANTAN SELATAN")
+    st.write("Aplikasi Pembelajaran Ekonomi Sumber Daya Hutan berbasis Streamlit")
+
+st.sidebar.header("IDENTITAS MAHASISWA")
+st.sidebar.write("KELOMPOK 9")
+st.sidebar.write("1. Ina Rani Amelia (10090224002)")
+st.sidebar.write("2. Nayla Dwi Safitri (10090224013)")
+st.sidebar.write("3. Celi Maulidi Aprilia (10090224027)")
+st.sidebar.write("Fakultas Ekonomi dan Business, Universitas Islam Bandung")
+
+st.sidebar.markdown("---")
+
+menu = st.sidebar.radio(
+    "PILIH MODUL APLIKASI",
+    [
+        "Modul 1: Kalkulator TEV", 
+        "Modul 2: Trade-off Analisis", 
+        "Modul 3: Kebijakan PES", 
+        "Modul 4: Kasus Interaktif"
+    ]
+)
+
+@st.cache_data
+def load_base_data():
+    data = {
+        "Variabel": [
+            "Luas Hutan Lindung (ha)", 
+            "Luas Suaka Alam & Pelestarian Alam (ha)",
+            "Luas Hutan Produksi Terbatas (ha)", 
+            "Luas Hutan Produksi Tetap (ha)",
+            "Luas Hutan Produksi Dapat Dikonversi (ha)", 
+            "Produksi Kayu Bulat (m³)",
+            "Produksi Kayu Gergajian (m³)", 
+            "Produksi Kayu Lapis (m³)",
+            "Produksi Veneer (m³)", 
+            "Nilai Kayu (Rp/tahun)",
+            "Nilai Karbon (Rp/tahun)", 
+            "Nilai Oksigen (Rp/tahun)",
+            "Total Nilai Ekonomi Langsung (Rp/tahun)"
+        ],
+        "Nilai": [
+            308221.52, 267541.98, 31220.48, 394563.75, 38663.39,
+            477250.17, 16082.54, 331057.94, 22991.57, 6991011291,
+            379053921, 2117993021, 9488058736
+        ],
+        "Sumber": [
+            "BPS Kalsel", "BPS Kalsel", "BPS Kalsel", "BPS Kalsel", "BPS Kalsel",
+            "BPS Kalsel", "BPS Kalsel", "BPS Kalsel", "BPS Kalsel", "Jurnal Pelaihari",
+            "Jurnal Pelaihari", "Jurnal Pelaihari", "Jurnal Pelaihari"
+        ]
+    }
+    return pd.DataFrame(data)
+
+df_asli = load_base_data()
+
+if menu == "Modul 1: Kalkulator TEV":
+    st.header("Modul 1: Kalkulator Total Economic Value (TEV)")
+    st.write("Analisis kuantitatif komponen nilai guna dan nilai bukan guna berdasarkan data dasar.")
+    
+    st.subheader("Data Input Wilayah dan Hasil Hutan")
+    st.dataframe(df_asli.iloc[0:9], use_container_width=True)
+    
+    st.subheader("Formulasi Valuasi Ekonomi")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        nilai_langsung = st.number_input("Nilai Guna Langsung (Manfaat Fisik Kayu) - Rp/Tahun", value=6991011291)
+        nilai_regulasi = st.number_input("Nilai Pengaturan (Jasa Karbon & Oksigen) - Rp/Tahun", value=2497046942)
+    
+    with col2:
+        nilai_pilihan = st.number_input("Nilai Pilihan (Option Value Keanekaragaman Hayati) - Rp/Tahun", value=1500000000)
+        nilai_eksistensi = st.number_input("Nilai Eksistensi (Existence Value Kelestarian) - Rp/Tahun", value=1500000000)
+        
+    total_tev = nilai_langsung + nilai_regulasi + nilai_pilihan + nilai_eksistensi
+    
+    st.markdown("### HASIL PERHITUNGAN TOTAL ECONOMIC VALUE")
+    st.metric(label="NILAI EKONOMI TOTAL (TEV) HUTAN KALSEL", value=f"Rp {total_tev:,.2f}")
+    
+    persen_langsung = (nilai_langsung / total_tev) * 100
+    persen_regulasi = (nilai_regulasi / total_tev) * 100
+    persen_pilihan = (nilai_pilihan / total_tev) * 100
+    persen_eksistensi = (nilai_eksistensi / total_tev) * 100
+    
+    st.subheader("Proporsi Kontribusi Nilai terhadap Ekosistem")
+    chart_data = pd.DataFrame({
+        "Kategori Nilai": ["Guna Langsung", "Pengaturan/Regulasi", "Pilihan Masa Depan", "Eksistensi"],
+        "Persentase (%)": [persen_langsung, persen_regulasi, persen_pilihan, persen_eksistensi]
+    })
+    st.bar_chart(data=chart_data, x="Kategori Nilai", y="Persentase (%)")
+
+elif menu == "Modul 2: Trade-off Analisis":
+    st.header("Modul 2: Analisis Substitusi Lahan (Hutan vs Perkebunan)")
+    st.write("Simulasi perbandingan kelayakan ekonomi konversi kawasan ekologis.")
+    
+    luas_total = df_asli.iloc[0:5]["Nilai"].sum()
+    st.write(f"Total Luas Kawasan Hutan Terdata di Kalimantan Selatan: {luas_total:,.2f} Hektar")
+    
+    luas_konversi = st.slider("Asumsi Luas Kawasan Hutan yang Dikonversi (Hektar)", 0.0, luas_total, 10000.0)
+    
+    untung_sawit_per_ha = st.number_input("Rata-rata Keuntungan Sektor Perkebunan Komersial (Rp/Hektar/Tahun)", value=15000000)
+    total_untung_konversi = luas_konversi * untung_sawit_per_ha
+    
+    nilai_hutan_per_ha = 9488058736 / luas_total
+    total_rugi_hutan = luas_konversi * nilai_hutan_per_ha
+    
+    manfaat_neto = total_untung_konversi - total_rugi_hutan
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Estimasi Manfaat Finansial Perkebunan", f"Rp {total_untung_konversi:,.2f}")
+    col2.metric("Estimasi Kerugian Ekologis Hutan", f"Rp {total_rugi_hutan:,.2f}")
+    col3.metric("Manfaat Bersih Kemakmuran (Net Benefit)", f"Rp {manfaat_neto:,.2f}")
+    
+    if manfaat_neto < 0:
+        st.error("Rekomendasi Kebijakan: Tolak Konversi Lahan. Kerugian fungsi ekosistem melampaui keuntungan finansial.")
+    else:
+        st.success("Rekomendasi Kebijakan: Konversi Secara Terbatas Dapat Dipertimbangkan dengan Pengawasan Ketat.")
+
+elif menu == "Modul 3: Kebijakan PES":
+    st.header("Modul 3: Simulasi Imbal Jasa Lingkungan (PES)")
+    st.write("Analisis instrumen pasar untuk menciptakan insentif ekonomi bagi masyarakat sekitar hutan.")
+    
+    tarif_karbon = st.number_input("Harga Karbon Internasional Berlaku (Rp / Ton CO2)", value=150000)
+    jumlah_karbon = st.number_input("Volume Penyerapan Karbon Tahunan (Ton CO2 / Tahun)", value=50000)
+    
+    total_dana_pes = tarif_karbon * jumlah_karbon
+    st.metric("Total Potensi Penerimaan Insentif Pasar Karbon", f"Rp {total_dana_pes:,.2f}")
+    
+    biaya_patroli = st.number_input("Alokasi Biaya Perlindungan & Patroli Hutan (Rp / Tahun)", value=500000000)
+    sisa_dana = total_dana_pes - biaya_patroli
+    
+    st.write(f"Dana mengendap untuk distribusi kesejahteraan komunitas lokal: Rp {sisa_dana:,.2f}")
+
+elif menu == "Modul 4: Kasus Interaktif":
+    st.header("Modul 4: Studi Kasus Riil Ekonomi Lingkungan")
+    st.write("Eksplorasi interaktif mengenai keterkaitan ekosistem dan aktivitas ekonomi.")
+    
+    pilihan_kasus = st.selectbox("Pilih Topik Kasus", ["Valuasi Serapan Karbon Pesisir", "Peran Jasa Penyerbukan Lebah"])
+    
+    if pilihan_kasus == "Valuasi Serapan Karbon Pesisir":
+        st.write("Analisis manfaat ekosistem mangrove dalam mereduksi dampak abrasi air laut.")
+        panjang_pantai = st.number_input("Panjang Infrastruktur Alami Mangrove (Kilometer)", value=50)
+        nilai_abrasi = panjang_pantai * 100000000
+        st.write(f"Nilai manfaat ekonomi tidak langsung penahanan abrasi: Rp {nilai_abrasi:,.2f} / tahun")
+    else:
+        st.write("Analisis nilai ketergantungan komoditas hortikultura terhadap keberadaan fauna hutan.")
+        luas_kebun = st.number_input("Luas Lahan Pertanian Sektor Hortikultura (Hektar)", value=5000)
+        nilai_tambah_produksi = luas_kebun * 2000000
+        st.write(f"Nilai ekonomi dari aktivitas penyerbukan alami lebah: Rp {nilai_tambah_produksi:,.2f} / tahun")
