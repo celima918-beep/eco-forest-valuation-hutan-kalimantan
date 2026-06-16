@@ -40,11 +40,6 @@ def load_base_data():
             308221.52, 267541.98, 31220.48, 394563.75, 38663.39,
             477250.17, 16082.54, 331057.94, 22991.57, 6991011291,
             379053921, 2117993021, 9488058736
-        ],
-        "Sumber": [
-            "BPS Kalsel", "BPS Kalsel", "BPS Kalsel", "BPS Kalsel", "BPS Kalsel",
-            "BPS Kalsel", "BPS Kalsel", "BPS Kalsel", "BPS Kalsel", "Jurnal Pelaihari",
-            "Jurnal Pelaihari", "Jurnal Pelaihari", "Jurnal Pelaihari"
         ]
     }
     return pd.DataFrame(data)
@@ -52,30 +47,38 @@ def load_base_data():
 df_asli = load_base_data()
 
 if menu == "Halaman Utama & Identitas":
-    col_logo, col_judul = st.columns([1, 4])
-    
-    with col_logo:
-        st.image(
-            "https://raw.githubusercontent.com/AnanditoS/ResourceStorage/main/logo-unisba-300x300.png", 
-            width=140
-        )
+    with st.container():
+        col_logo, col_judul = st.columns([1, 4])
         
-    with col_judul:
-        st.title("ECO-FOREST VALUATION HUTAN KALIMANTAN SELATAN")
-        st.subheader("Aplikasi Pembelajaran Ekonomi Sumber Daya Hutan Berbasis Streamlit")
-        st.write("Fakultas Ekonomi dan Bisnis, Universitas Islam Bandung")
-        
+        with col_logo:
+            st.image(
+                "https://upload.wikimedia.org/wikipedia/commons/e/e0/Logo_Unisba.png", 
+                width=150
+            )
+            
+        with col_judul:
+            st.title("ECO-FOREST VALUATION HUTAN KALIMANTAN SELATAN")
+            st.subheader("Aplikasi Pembelajaran Ekonomi Sumber Daya Hutan Berbasis Streamlit")
+            st.write("Fakultas Ekonomi dan Bisnis, Universitas Islam Bandung")
+            
     st.write("---")
     
-    st.header("IDENTITAS MAHASISWA PENYUSUN")
-    st.subheader("KELOMPOK 9")
-    
-    st.write("1. Ina Rani Amelia (NPM: 10090224002)")
-    st.write("2. Nayla Dwi Safitri (NPM: 10090224013)")
-    st.write("3. Celi Maulidi Aprilia (NPM: 10090224027)")
-    
+    with st.container():
+        st.markdown("### IDENTITAS MAHASISWA PENYUSUN")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.info("#### ANGGOTA 1\n**Ina Rani Amelia**\nNPM: 10090224002")
+            
+        with col2:
+            st.success("#### ANGGOTA 2\n**Nayla Dwi Safitri**\nNPM: 10090224013")
+            
+        with col3:
+            st.warning("#### ANGGOTA 3\n**Celi Maulidi Aprilia**\nNPM: 10090224027")
+            
     st.write("---")
-    st.write("Silakan gunakan menu navigasi di sebelah kiri untuk mengakses modul kalkulator ekonomi hutan.")
+    st.info("Petunjuk Penggunaan: Silakan gunakan menu navigasi di sebelah kiri untuk mengakses setiap modul analisis ekonomi lingkungan.")
 
 elif menu == "Modul 1: Kalkulator TEV":
     st.header("Modul 1: Kalkulator Total Economic Value (TEV)")
