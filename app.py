@@ -7,30 +7,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-col_logo, col_judul = st.columns([1, 4])
-
-with col_logo:
-    st.image(
-        "https://www.unisba.ac.id/wp-content/uploads/2022/09/logo-unisba-300x300.png", 
-        width=120
-    )
-
-with col_judul:
-    st.title("ECO-FOREST VALUATION HUTAN KALIMANTAN SELATAN")
-    st.write("Aplikasi Pembelajaran Ekonomi Sumber Daya Hutan berbasis Streamlit")
-
-st.sidebar.header("IDENTITAS MAHASISWA")
-st.sidebar.write("KELOMPOK 9")
-st.sidebar.write("1. Ina Rani Amelia (10090224002)")
-st.sidebar.write("2. Nayla Dwi Safitri (10090224013)")
-st.sidebar.write("3. Celi Maulidi Aprilia (10090224027)")
-st.sidebar.write("Fakultas Ekonomi dan Business, Universitas Islam Bandung")
-
-st.sidebar.markdown("---")
-
 menu = st.sidebar.radio(
     "PILIH MODUL APLIKASI",
     [
+        "Halaman Utama & Identitas",
         "Modul 1: Kalkulator TEV", 
         "Modul 2: Trade-off Analisis", 
         "Modul 3: Kebijakan PES", 
@@ -71,7 +51,33 @@ def load_base_data():
 
 df_asli = load_base_data()
 
-if menu == "Modul 1: Kalkulator TEV":
+if menu == "Halaman Utama & Identitas":
+    col_logo, col_judul = st.columns([1, 4])
+    
+    with col_logo:
+        st.image(
+            "https://raw.githubusercontent.com/AnanditoS/ResourceStorage/main/logo-unisba-300x300.png", 
+            width=140
+        )
+        
+    with col_judul:
+        st.title("ECO-FOREST VALUATION HUTAN KALIMANTAN SELATAN")
+        st.subheader("Aplikasi Pembelajaran Ekonomi Sumber Daya Hutan Berbasis Streamlit")
+        st.write("Fakultas Ekonomi dan Bisnis, Universitas Islam Bandung")
+        
+    st.write("---")
+    
+    st.header("IDENTITAS MAHASISWA PENYUSUN")
+    st.subheader("KELOMPOK 9")
+    
+    st.write("1. Ina Rani Amelia (NPM: 10090224002)")
+    st.write("2. Nayla Dwi Safitri (NPM: 10090224013)")
+    st.write("3. Celi Maulidi Aprilia (NPM: 10090224027)")
+    
+    st.write("---")
+    st.write("Silakan gunakan menu navigasi di sebelah kiri untuk mengakses modul kalkulator ekonomi hutan.")
+
+elif menu == "Modul 1: Kalkulator TEV":
     st.header("Modul 1: Kalkulator Total Economic Value (TEV)")
     st.write("Analisis kuantitatif komponen nilai guna dan nilai bukan guna berdasarkan data dasar.")
     
@@ -91,7 +97,7 @@ if menu == "Modul 1: Kalkulator TEV":
         
     total_tev = nilai_langsung + nilai_regulasi + nilai_pilihan + nilai_eksistensi
     
-    st.markdown("### HASIL PERHITUNGAN TOTAL ECONOMIC VALUE")
+    st.write("### HASIL PERHITUNGAN TOTAL ECONOMIC VALUE")
     st.metric(label="NILAI EKONOMI TOTAL (TEV) HUTAN KALSEL", value=f"Rp {total_tev:,.2f}")
     
     persen_langsung = (nilai_langsung / total_tev) * 100
