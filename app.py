@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import base64
+import os
 
 st.set_page_config(
     page_title="Eco-Forest Valuation Hutan Kalimantan Selatan", 
@@ -46,15 +48,22 @@ def load_base_data():
 
 df_asli = load_base_data()
 
+def get_image_base64(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    return None
+
 if menu == "Halaman Utama & Identitas":
     with st.container():
         col_logo, col_judul = st.columns([1, 4])
         
         with col_logo:
-            st.image(
-                "https://upload.wikimedia.org/wikipedia/commons/e/e0/Logo_Unisba.png", 
-                width=150
-            )
+            img_base64 = get_image_base64("logo.png")
+            if img_base64:
+                st.markdown(f'<img src="data:image/png;base64,{img_base64}" width="150">', unsafe_allow_html=True)
+            else:
+                st.warning("File logo.png tidak ditemukan di repositori.")
             
         with col_judul:
             st.title("ECO-FOREST VALUATION HUTAN KALIMANTAN SELATAN")
